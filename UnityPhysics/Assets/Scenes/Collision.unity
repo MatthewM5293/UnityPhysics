@@ -365,7 +365,7 @@ GameObject:
   - component: {fileID: 347536179}
   - component: {fileID: 347536178}
   - component: {fileID: 347536183}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: ControllerPlayer
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -449,6 +449,7 @@ Transform:
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 2087711220}
+  - {fileID: 1524991123}
   m_Father: {fileID: 0}
   m_RootOrder: 12
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -484,8 +485,15 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   speed: 3
   turnRate: 5
-  jumpHeight: 3
+  jumpHeight: 2
+  doubleJumpHeight: 1
   hitForce: 2
+  fallRateMultiplier: 1.41
+  lowJumpRateMultiplier: 1.34
+  groundTransform: {fileID: 1524991123}
+  groundLayerMask:
+    serializedVersion: 2
+    m_Bits: 55
 --- !u!1 &410087039
 GameObject:
   m_ObjectHideFlags: 0
@@ -931,6 +939,37 @@ Rigidbody:
   m_Interpolate: 0
   m_Constraints: 0
   m_CollisionDetection: 0
+--- !u!1 &1524991122
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1524991123}
+  m_Layer: 6
+  m_Name: Ground
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &1524991123
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1524991122}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: -1, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 347536182}
+  m_RootOrder: 1
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1001 &1547484198
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -1098,7 +1137,7 @@ GameObject:
   - component: {fileID: 2087711223}
   - component: {fileID: 2087711222}
   - component: {fileID: 2087711221}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: Sphere
   m_TagString: Untagged
   m_Icon: {fileID: 0}

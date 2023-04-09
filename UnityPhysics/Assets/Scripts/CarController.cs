@@ -23,6 +23,12 @@ public class CarController : MonoBehaviour
     [SerializeField] Axle[] axles;
     [SerializeField] float maxMotorTorque;
     [SerializeField] float maxSteeringAngle;
+    Transform reset;
+
+    private void Start()
+    {
+        reset = transform;
+    }
 
     public void FixedUpdate()
     {
@@ -42,6 +48,10 @@ public class CarController : MonoBehaviour
             }
             UpdateWheelTransform(axle.leftWheel);
             UpdateWheelTransform(axle.rightWheel);
+        }
+        if(Input.GetKeyDown(KeyCode.Escape))
+        {
+            transform.position = reset.position;
         }
     }
 
