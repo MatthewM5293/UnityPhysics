@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using Unity.VisualScripting;
 using UnityEditor.Search;
 using UnityEngine;
 
@@ -20,6 +21,9 @@ public class CharacterController2D : MonoBehaviour
     [SerializeField] Transform groundTransform;
     [SerializeField] LayerMask groundLayerMask;
     [SerializeField] float groundRadius = 0;
+    [Header("Attack")]
+    [SerializeField] Transform attackTransform;
+    [SerializeField] float attackRadius;
 
     Rigidbody2D rb;
 
@@ -30,16 +34,17 @@ public class CharacterController2D : MonoBehaviour
     void Start()
     {
         rb = GetComponent<Rigidbody2D>();
-        spriteRenderer = GetComponent<SpriteRenderer>();
     }
     void Update()
     {
         // check if the character is on the ground
-        bool onGround = Physics2D.OverlapCircle(groundTransform.position, groundRadius, groundLayerMask) != null;
+        bool onGround = UpdateGroundCheck() && (rb.velocity.y < 0);
 
         // get direction input
         Vector2 direction = Vector2.zero;
         direction.x = Input.GetAxis("Horizontal");
+
+        //direction = Quaternion.AngleAxis()
         
         velocity.x = direction.x * speed;
 
@@ -52,6 +57,12 @@ public class CharacterController2D : MonoBehaviour
                 velocity.y += Mathf.Sqrt(jumpHeight * -2 * Physics.gravity.y);
                 StartCoroutine(DoubleJump());
                 animator.SetTrigger("Jump");
+            }
+
+            //player attack
+            if (Input.GetMouseButtonDown(0)) 
+            {
+                animator.SetTrigger("Attack");
             }
         }
         
@@ -71,12 +82,6 @@ public class CharacterController2D : MonoBehaviour
         //update animator
         animator.SetFloat("Speed", Mathf.Abs(velocity.x));
         animator.SetBool("Fall", !onGround && velocity.y < -0.1f);
-
-        // move character
-        velocity = (velocity * Time.deltaTime);
-        
-        // rotate character to face direction of movement (velocity)
-
     }
 
     IEnumerator DoubleJump()
@@ -96,16 +101,53 @@ public class CharacterController2D : MonoBehaviour
         }
     }
 
+    private bool UpdateGroundCheck()
+    {
+        // check if the character is on the ground
+        Collider2D collider = Physics2D.OverlapCircle(groundTransform.position, groundRadius, groundLayerMask);
+        if (collider != null)
+        {
+            RaycastHit2D raycastHit = Physics2D.Raycast(groundTransform.position, Vector2.down, groundRadius, groundLayerMask);
+            if (raycastHit.collider != null)
+            {
+                // get the angle of the ground (angle between up vector and ground normal)
+                groundAngle = Vector2.SignedAngle(Vector2.up, raycastHit.normal);
+                Debug.DrawRay(raycastHit.point, raycastHit.normal, Color.red);
+            }
+        }
+
+        return (collider != null);
+    }
+
     private void Flip() 
     {
         faceRight = !faceRight;
-
-        GetComponent<SpriteRenderer>().flipX = faceRight;
+        spriteRenderer.flipX = !faceRight;
     }
+
     private void OnDrawGizmos()
     {
         Gizmos.color = Color.red;
         Gizmos.DrawSphere(groundTransform.position, groundRadius);
     }
+
+    private void CheckAttack()
+    {
+        //detect all objects, returns array
+        Collider2D[] colliders = Physics2D.OverlapCircleAll(attackTransform.position, attackRadius);
+        //go through all collided objects
+        foreach (Collider2D collider in colliders)
+        {
+            //skip this iteration, not damagable
+            if (collider.gameObject == gameObject) continue;
+            //if it's a damagable object, damage it
+            if (collider.gameObject.TryGetComponent<IDamagable>(out IDamagable damagable))
+            {
+                damagable.Damage(10);
+            }
+        }
+    }
+
+
 
 }
